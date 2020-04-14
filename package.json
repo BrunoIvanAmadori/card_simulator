@@ -1,0 +1,22 @@
+{
+  "name": "card-simulator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "dependencies": {
+    "tsconfig.json": "^1.0.7"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "typescript": "^3.8.3"
+  },
+  "scripts": {
+    "start": "parcel index.html index.ts *.html *.ts assets/*.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "browserslist": [
+    "last 1 Chrome version"
+  ]
+}
