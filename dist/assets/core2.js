@@ -117,7 +117,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"assets/core.ts":[function(require,module,exports) {
+})({"assets/core2.ts":[function(require,module,exports) {
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
   function adopt(value) {
     return value instanceof P ? value : new P(function (resolve) {
@@ -259,31 +259,56 @@ var __generator = this && this.__generator || function (thisArg, body) {
   }
 };
 
-var Deck =
-/** @class */
-function () {
-  function Deck(cards) {
-    this.cards = cards;
-  }
+var cardId = 0;
+var deckId = 0;
+var handId = 0; //Card : lo que compone los pilones. Hay tipos de cartas. Se pueden repetir. Tienen ID único por creación y tienen posicion en el pilon,
+//CardType : Es el tipo de carta. Varias cartas pueden ser la misma carta repetida.
+//CardPile : contine las caracteristicas generales de un pilon de cartas. Tiene X cantidad, se puede mezclar y reordenar.
+//Deck : Es un pilon, pero de 60 cartas, que se reparten 7 al principio a la Hand y una por turno. Además pertenece a un jugador.
+//Hand : Es un pilón, pero de 7 cartas iniciales, que son obtenidas al principio y una por turno. Pertenecen a un jugador. El jugador puede tirar las que quiera cada turno, siempre y cuando las reglas lo permitan.
+//Falta que me construya un deck con n cartas a partir de una lista con n cartas. Averiguar API.
+//Luego, de ese deck, puedo repartir 7 cartas a la mano
+//De la mano las puedo reordenar, o tirarlas al campo de juego
+// Carga el mazo seleccionado
 
-  return Deck;
-}();
+var fileInput = document.querySelector('#file-input');
+document.getElementById('read-button').addEventListener('click', function () {
+  return loadDeck(fileInput, function (txt) {
+    return fetchCardList(newDeckList(txt));
+  });
+});
 
-;
+function fetchCardList(list) {
+  return __awaiter(this, void 0, void 0, function () {
+    var cardList, cardListKeys, cardListNames, cardListPromises, cardListCards, deckCardObject;
+    return __generator(this, function (_a) {
+      switch (_a.label) {
+        case 0:
+          cardList = list;
+          cardListKeys = Object.keys(this.deckCardList);
+          cardListNames = cardListKeys.map(function (key) {
+            return cardList[key].name;
+          });
+          cardListPromises = cardListNames.map(function (card) {
+            return getCard(card);
+          });
+          cardListCards = Promise.all(cardListPromises);
+          return [4
+          /*yield*/
+          , cardListCards];
 
-function readTxt(fileInput) {
-  var file = fileInput.files[0];
-  var reader = new FileReader();
-  reader.readAsText(file);
-  reader.onload = readSuccess;
-
-  function readSuccess(evt) {
-    rawCardListFrom(evt.target.result);
-  }
+        case 1:
+          deckCardObject = _a.sent();
+          return [2
+          /*return*/
+          , deckCardObject];
+      }
+    });
+  });
 }
 
-function rawCardListFrom(txt) {
-  var lines = txt.split("\n");
+function newDeckList(txt) {
+  var lines = this.txt.split("\n");
   var numLines = lines.length;
   var cardList = [];
   var idcount = 0; // parse
@@ -297,7 +322,7 @@ function rawCardListFrom(txt) {
 
       for (var d = 0; d < qty[0]; d++) {
         cardList[idcount++] = {
-          'name': name[0].slice(1, name[0].length - 1)
+          'name': name[0].slice(1)
         };
       } //endfor
 
@@ -305,26 +330,30 @@ function rawCardListFrom(txt) {
 
   }
 
-  var result = "{ \"identifiers\" : " + JSON.stringify(cardList) + "}";
-  getCollection(result);
+  return cardList;
 }
 
-function getCollection(list) {
+function loadDeck(fileInput, cb) {
+  var file = fileInput.files[0];
+  var reader = new FileReader();
+  reader.readAsText(file);
+  reader.onload = readSuccess;
+
+  function readSuccess(evt) {
+    cb(evt.target.result);
+  }
+}
+
+function getCard(named) {
   return __awaiter(this, void 0, void 0, function () {
     var url, response, data;
     return __generator(this, function (_a) {
       switch (_a.label) {
         case 0:
-          url = "https://api.scryfall.com/cards/collection";
+          url = "https://api.scryfall.com/cards/named?exact=" + named;
           return [4
           /*yield*/
-          , fetch(url, {
-            method: 'POST',
-            body: list,
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })];
+          , fetch(url)];
 
         case 1:
           response = _a.sent();
@@ -334,23 +363,16 @@ function getCollection(list) {
 
         case 2:
           data = _a.sent();
-          nuevoMazo(data.data);
           return [2
           /*return*/
-          ];
+          , data];
       }
     });
   });
 }
 
-function nuevoMazo(cards) {
-  var primerMazo = new Deck(cards);
-  console.log(primerMazo);
-}
-
-var fileInput = document.querySelector('#file-input');
-document.getElementById('read-button').addEventListener('click', function () {
-  readTxt(fileInput);
+getCard('Martyr+of+Dusk').then(function (card) {
+  displayCard(getCardImageUri(card, 'normal'));
 });
 
 function getCardImageUri(object, size) {
@@ -360,8 +382,135 @@ function getCardImageUri(object, size) {
 function displayCard(source) {
   var img = document.createElement('img');
   document.querySelector(".card").appendChild(img);
-  img.src = source;
+  img.src = source; //getCardImageUri(getCard()).then()
+} //
+//
+//
+// function newId( type:any ) {
+//   switch (type) {
+//     case Card:
+//       cardId++;
+//         return cardId;
+//     case Deck:
+//     deckId++;
+//         return deckId;
+//     case Hand:
+//     handId++;
+//       return handId;
+//   }
+// }
+// class CardPile {
+//   constructor (qty:number, max:number) {
+//     let numberOfCards:number = qty;
+//     let maxCards:number = max;
+//   }
+// }
+
+
+function counter(b) {
+  var a = 0;
+
+  (function () {
+    return a + b;
+  });
 }
+
+var Deck =
+/** @class */
+function () {
+  function Deck(fileTxt, name) {
+    this.deckTxt = fileTxt; // this.deckName = name;
+
+    this.deckCardList = this.createCardListFromTxt();
+    this.fetchCardList(); // this.newDeck()
+  }
+
+  Deck.prototype.fetchCardList = function () {
+    return __awaiter(this, void 0, void 0, function () {
+      var cardList, cardListKeys, cardListNames, cardListPromises, cardListCards, _a;
+
+      return __generator(this, function (_b) {
+        switch (_b.label) {
+          case 0:
+            cardList = this.deckCardList;
+            cardListKeys = Object.keys(this.deckCardList);
+            cardListNames = cardListKeys.map(function (key) {
+              return cardList[key].name;
+            });
+            cardListPromises = cardListNames.map(function (card) {
+              return getCard(card);
+            });
+            cardListCards = Promise.all(cardListPromises);
+            _a = this;
+            return [4
+            /*yield*/
+            , cardListCards];
+
+          case 1:
+            _a.deckCardObject = _b.sent();
+            console.log(this.deckCardObject);
+            return [2
+            /*return*/
+            , this.deckCardObject];
+        }
+      });
+    });
+  };
+
+  Deck.prototype.createCardListFromTxt = function () {
+    var lines = this.deckTxt.split("\n");
+    var numLines = lines.length;
+    var cardList = [];
+    var idcount = 0; // parse
+
+    for (var i = 0; i < numLines; i++) {
+      var line = lines[i];
+
+      if (!(line.indexOf('/') == 0 || line.indexOf(' ') == -1 || line.indexOf('SB:') == 0)) {
+        var qty = line.match(/\d+/);
+        var name = line.match(/\D+/);
+
+        for (var d = 0; d < qty[0]; d++) {
+          cardList[idcount++] = {
+            'name': name[0].slice(1)
+          };
+        } //endfor
+
+      } //endif
+
+    }
+
+    return cardList;
+  };
+
+  return Deck;
+}();
+
+var Hand =
+/** @class */
+function () {
+  function Hand(id, name) {
+    var cardId = id;
+    var handName = name;
+  }
+
+  return Hand;
+}();
+
+var Card =
+/** @class */
+function () {
+  function Card(name) {
+    cardId = newId(Card);
+    var cardName = name;
+    console.log("Card " + cardId + " with name \"" + cardName + "\" has been created.");
+  }
+
+  return Card;
+}(); // const deck01 = new Deck(30);
+//
+// const card02 = new Card('pepito');
+// const card03 = new Card('pepito');
 },{}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -566,5 +715,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["node_modules/parcel-bundler/src/builtins/hmr-runtime.js","assets/core.ts"], null)
-//# sourceMappingURL=/assets/core.js.map
+},{}]},{},["node_modules/parcel-bundler/src/builtins/hmr-runtime.js","assets/core2.ts"], null)
+//# sourceMappingURL=/assets/core2.js.map

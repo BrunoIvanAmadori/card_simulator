@@ -25,7 +25,6 @@ document.getElementById('read-button').addEventListener('click', () =>
   loadDeck(fileInput, txt => fetchCardList(newDeckList(txt)))
 )
 
-
 async function fetchCardList(list) {
   const cardList = list;
   const cardListKeys = Object.keys(this.deckCardList);
@@ -82,9 +81,7 @@ async function getCard(named:string) {
   return data;
 }
 
-async function getDeck() {
 
-};
 
  getCard('Martyr+of+Dusk')
    .then((card) => {
@@ -103,29 +100,29 @@ function displayCard(source) {
   //getCardImageUri(getCard()).then()
 }
 
+//
+//
+//
+// function newId( type:any ) {
+//   switch (type) {
+//     case Card:
+//       cardId++;
+//         return cardId;
+//     case Deck:
+//     deckId++;
+//         return deckId;
+//     case Hand:
+//     handId++;
+//       return handId;
+//   }
+// }
 
-
-
-function newId( type:any ) {
-  switch (type) {
-    case Card:
-      cardId++;
-        return cardId;
-    case Deck:
-    deckId++;
-        return deckId;
-    case Hand:
-    handId++;
-      return handId;
-  }
-}
-
-class CardPile {
-  constructor (qty:number, max:number) {
-    let numberOfCards:number = qty;
-    let maxCards:number = max;
-  }
-}
+// class CardPile {
+//   constructor (qty:number, max:number) {
+//     let numberOfCards:number = qty;
+//     let maxCards:number = max;
+//   }
+// }
 
 function counter(b:number) {
   let a = 0;
@@ -144,10 +141,10 @@ class Deck {
 
   constructor(fileTxt:string, name:string) {
     this.deckTxt = fileTxt;
-    this.deckName = name;
+    // this.deckName = name;
     this.deckCardList = this.createCardListFromTxt();
     this.fetchCardList();
-    this.newDeck()
+    // this.newDeck()
   }
 
 
